@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>有爱无碍，易生同行 - 助残服务APP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #fff3e8;
+            font-size: 18px;
+            color: #333;
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .app-header {
+            background-color: #f9a875;
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .app-main {
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        .search-box {
+            margin: 10px 0 20px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ffddbc;
+            border-radius: 50px;
+            font-size: 17px;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #f9a875;
+            box-shadow: 0 0 8px rgba(249, 168, 117, 0.4);
+        }
+
+        /* 新版 人民日报风格 轮播新闻 */
+        .news-swiper {
+            position: relative;
+            width: 100%;
+            height: 190px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .news-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        .news-item {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            scroll-snap-align: center;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            border-radius: 16px;
+        }
+        .news-item::after {
+            content: '';
+            position: absolute;
+            left:0;right:0;bottom:0;
+            height: 70px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.6));
+            border-radius: 16px;
+        }
+        .news-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 18px 16px;
+            color: #fff;
+            z-index: 2;
+        }
+        .news-text h4 {
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1.4;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .voice-btn {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            background: rgba(255,255,255,0.9);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #e88a4e;
+            border: none;
+            z-index: 3;
+        }
+        .weather-bar {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ffddbc;
+            font-size: 15px;
+            color: #555;
+        }
+        .weather-bar strong {
+            color: #e88a4e;
+            font-size: 16px;
+        }
+
+        .func-grid {
+            display: none; /* 隐藏旧的4个小方框 */
+        }
+
+        .service-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 18px;
+            border: 1px solid #ffddbc;
+            transition: transform 0.3s ease;
+        }
+        .service-card:hover {
+            transform: scale(1.02);
+        }
+        .service-card h3 {
+            color: #c76c2c;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        .service-card p {
+            color: #666;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-top: 12px;
+            background-color: #e88a4e;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn:active {
+            transform: scale(0.97);
+            background-color: #d47032;
+        }
+
+        .app-tab {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: #fff;
+            display: flex;
+            border-top: 1px solid #eee;
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.08);
+        }
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            color: #888;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .tab-item.active {
+            color: #f9a875;
+        }
+        .tab-icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .form-group {
+            margin: 16px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 16px;
+            color: #444;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 17px;
+            background: #fff;
+            transition: border 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #f9a875;
+            box-shadow: 0 0 6px rgba(249,168,117,0.35);
+        }
+
+        .help-alert {
+            background: #ffe6d2;
+            border-left: 6px solid #ff784f;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            background: rgba(255,255,255,0.3);
+            padding: 6px 12px;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* 商品网格样式 */
+        .goods-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .goods-item {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #ffddbc;
+        }
+        .goods-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+        }
+        .goods-info {
+            padding: 10px;
+        }
+        .goods-name {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 6px;
+            line-height: 1.3;
+            height: 36px;
+            overflow: hidden;
+        }
+        .goods-price {
+            font-size: 16px;
+            color: #e84e40;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <div class="back-btn" onclick="goPage('page-home')">← 返回</div>
+    <span id="header-title">有爱无碍，易生同行</span>
+</div>
+
+<div class="app-main">
+
+<!-- ====================== 首页（全新改版） ====================== -->
+<div class="page active" id="page-home">
+    <div class="search-box">
+        <input type="text" placeholder="搜索服务、机构、岗位、课程">
+    </div>
+
+    <!-- 人民日报风格 轮播新闻 -->
+    <div class="news-swiper">
+        <button class="voice-btn" onclick="readNews()">🔊</button>
+        <div class="news-wrapper">
+            <div class="news-item" style="background-image:url('https://picsum.photos/id/175/600/400')">
+                <div class="news-text">
+                    <h4>全国助残日：推动无障碍环境建设，保障残障人士平等参与</h4>
+                </div>
+            </div>
+            <div class="news-item" style="background-image:url('https://picsum.photos/id/136/600/400')">
+                <div class="news-text">
+                    <h4>残疾人就业促进新政发布：企业按比例安置，补贴全面升级</h4>
+                </div>
+            </div>
+            <div class="news-item" style="background-image:url('https://picsum.photos/id/160/600/400')">
+                <div class="news-text">
+                    <h4>感动中国：残障青年自主创业，用双手创造精彩人生</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 天气预报 -->
+    <div class="weather-bar">
+        <div>📍 本地天气</div>
+        <div><strong>晴 24℃</strong> 适宜出行</div>
+    </div>
+
+    <div class="help-alert">
+        <h3>紧急求助通道</h3>
+        <p>遇到困难可一键呼叫帮扶人员、社区及应急服务，24小时响应</p>
+        <button class="btn" onclick="goPage('page-help')">立即求助</button>
+    </div>
+
+    <div class="service-card">
+        <h3>全周期个性化服务</h3>
+        <p>儿童启蒙→青少年培训→成年就业→中老年守护，一生陪伴</p>
+        <button class="btn" onclick="goPage('page-cycle')">进入服务</button>
+    </div>
+
+    <div class="service-card">
+        <h3>一键反映</h3>
+        <p>反映公共设施无障碍问题，提交位置与情况，快速处理</p>
+        <button class="btn" onclick="goPage('page-report')">我要反映</button>
+    </div>
+</div>
+
+<!-- ====================== 全生命周期服务页 ====================== -->
+<div class="page" id="page-cycle">
+    <div class="service-card">
+        <h3>儿童潜能启蒙</h3>
+        <p>兴趣测评、潜能发掘、特教资源对接，成长定制</p>
+        <button class="btn" onclick="goPage('page-child')">前往服务</button>
+    </div>
+    <div class="service-card">
+        <h3>青少年技能培训</h3>
+        <p>职业课程、特教资源、学习跟踪</p>
+        <button class="btn" onclick="goPage('page-teen')">前往服务</button>
+    </div>
+    <div class="service-card">
+        <h3>成年就业帮扶</h3>
+        <p>岗位匹配、就业指导、企业对接</p>
+        <button class="btn" onclick="goPage('page-job')">前往服务</button>
+    </div>
+    <div class="service-card">
+        <h3>中老年陪伴守护</h3>
+        <p>日常关怀、上门服务、生活指导、定期回访</p>
+        <button class="btn" onclick="goPage('page-old')">前往服务</button>
+    </div>
+</div>
+
+<!-- ====================== 服务大厅（真正的无障碍工具） ====================== -->
+<div class="page" id="page-service">
+    <div class="service-card">
+        <h3>🧭 智能无障碍导航</h3>
+        <p>自动规划无障碍路线，避开台阶、陡坡，推荐电梯、坡道、盲道</p>
+        <button class="btn" onclick="goPage('page-nav')">开启导航</button>
+    </div>
+    <div class="service-card">
+        <h3>🤝 实时手语翻译</h3>
+        <p>视频实时手语翻译，语音转手语，手语转文字，助力听障交流</p>
+        <button class="btn" onclick="goPage('page-sign')">开启翻译</button>
+    </div>
+    <div class="service-card">
+        <h3>🔊 语音播报助手</h3>
+        <p>文字自动朗读，界面语音引导，支持视障用户使用</p>
+        <button class="btn" onclick="goPage('page-voice')">开启播报</button>
+    </div>
+    <div class="service-card">
+        <h3>💬 语音转文字</h3>
+        <p>实时录音转文字，通话转文字，方便听障/语言障碍人士</p>
+        <button class="btn" onclick="goPage('page-stt')">开启转换</button>
+    </div>
+    <div class="service-card">
+        <h3>🔍 屏幕放大镜</h3>
+        <p>全局放大、高对比度、护眼模式，提升低视力用户体验</p>
+        <button class="btn" onclick="goPage('page-zoom')">开启放大</button>
+    </div>
+</div>
+
+<!-- ====================== 一键反映（公共设施问题） ====================== -->
+<div class="page" id="page-report">
+    <div class="service-card">
+        <h3>📝 公共设施问题反映</h3>
+        <p>请如实填写无障碍设施缺失、损坏、不便情况</p>
+        <div class="form-group">
+            <label>你的位置</label>
+            <input placeholder="如：XX路XX公园入口">
+        </div>
+        <div class="form-group">
+            <label>设施类型</label>
+            <input placeholder="盲道/坡道/电梯/卫生间/无障碍通道">
+        </div>
+        <div class="form-group">
+            <label>问题描述</label>
+            <textarea rows="4" placeholder="请详细描述遇到的不便"></textarea>
+        </div>
+        <div class="form-group">
+            <label>上传照片（可选）</label>
+            <input type="text" placeholder="描述照片内容即可">
+        </div>
+        <button class="btn" onclick="alert('提交成功！工作人员将尽快处理')">提交反映</button>
+    </div>
+</div>
+
+<!-- ====================== 一键求助 ====================== -->
+<div class="page" id="page-help">
+    <div class="service-card">
+        <h3>🆘 一键紧急求助</h3>
+        <p>点击下方按钮，立即通知社区、志愿者、紧急联系人</p>
+        <button class="btn" onclick="alert('求助已发出！')">发送求助</button>
+        <button class="btn" onclick="goPage('page-user')">设置紧急联系人</button>
+    </div>
+</div>
+
+<!-- ====================== 无碍工坊（上一版好看样式） ====================== -->
+<div class="page" id="page-shop">
+    <div class="service-card">
+        <h3>残障创作者作品</h3>
+        <p>手工艺品、文创作品展示售卖，支持残障创业者自主经营</p>
+        <button class="btn" onclick="goPage('page-crafts')">逛工坊</button>
+    </div>
+
+    <div class="service-card">
+        <h3>无障碍生活用品</h3>
+        <p>助行、助听、助视、居家无障碍辅助用品，正品保障</p>
+        <button class="btn" onclick="alert('进入商城')">选购商品</button>
+    </div>
+
+    <div class="service-card">
+        <h3>商家入驻通道</h3>
+        <p>助残商户、残障创业者免费入驻，平台导流扶持</p>
+        <button class="btn" onclick="goPage('page-user')">申请入驻</button>
+    </div>
+
+    <div class="service-card">
+        <h3>公益商城说明</h3>
+        <p>商城所有收益全部用于平台运营与公益服务，以商养公，持续助残</p>
+    </div>
+</div>
+
+<!-- ====================== 新增：残障创作者作品商品页 ====================== -->
+<div class="page" id="page-crafts">
+    <div class="search-box">
+        <input type="text" placeholder="搜索手工艺品、文创作品">
+    </div>
+    <div class="goods-grid">
+        <div class="goods-item">
+            <img src="https://picsum.photos/id/118/400/300" class="goods-img">
+            <div class="goods-info">
+                <div class="goods-name">手工编织平安挂件</div>
+                <div class="goods-price">¥29.9</div>
+            </div>
+        </div>
+        <div class="goods-item">
+            <img src="https://picsum.photos/id/119/400/300" class="goods-img">
+            <div class="goods-info">
+                <div class="goods-name">残障人士手绘帆布包</div>
+                <div class="goods-price">¥39.9</div>
+            </div>
+        </div>
+        <div class="goods-item">
+            <img src="https://picsum.photos/id/120/400/300" class="goods-img">
+            <div class="goods-info">
+                <div class="goods-name">手工木质小摆件</div>
+                <div class="goods-price">¥45.0</div>
+            </div>
+        </div>
+        <div class="goods-item">
+            <img src="https://picsum.photos/id/121/400/300" class="goods-img">
+            <div class="goods-info">
+                <div class="goods-name">非遗剪纸艺术作品</div>
+                <div class="goods-price">¥59.0</div>
+            </div>
+        </div>
+        <div class="goods-item">
+            <img src="https://picsum.photos/id/122/400/300" class="goods-img">
+            <div class="goods-info">
+                <div class="goods-name">手工刺绣书签</div>
+                <div class="goods-price">¥19.9</div>
+            </div>
+        </div>
+        <div class="goods-item">
+            <img src="https://picsum.photos/id/123/400/300" class="goods-img">
+            <div class="goods-info">
+                <div class="goods-name">陶瓷手工小茶杯</div>
+                <div class="goods-price">¥69.0</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====================== 个人中心 ====================== -->
+<div class="page" id="page-user">
+    <div class="service-card">
+        <h3>个人信息</h3>
+        <div class="form-group"><label>姓名</label><input placeholder="请输入姓名"></div>
+        <div class="form-group"><label>电话</label><input placeholder="请输入手机号"></div>
+        <div class="form-group"><label>需求描述</label><textarea rows="3"></textarea></div>
+        <button class="btn">保存信息</button>
+    </div>
+    <div class="service-card">
+        <h3>我的服务记录</h3>
+        <p>查看服务、课程、求助、反映记录</p>
+        <button class="btn" onclick="alert('加载记录')">查看记录</button>
+    </div>
+</div>
+
+<!-- ====================== 子功能页面 ====================== -->
+<div class="page" id="page-child"><div class="service-card"><h3>儿童潜能启蒙服务</h3><p>已进入儿童服务页面</p><button class="btn" onclick="goPage('page-cycle')">返回</button></div></div>
+<div class="page" id="page-teen"><div class="service-card"><h3>青少年技能培训</h3><p>已进入青少年服务页面</p><button class="btn" onclick="goPage('page-cycle')">返回</button></div></div>
+<div class="page" id="page-job"><div class="service-card"><h3>成年就业帮扶</h3><p>已进入就业服务页面</p><button class="btn" onclick="goPage('page-cycle')">返回</button></div></div>
+<div class="page" id="page-old"><div class="service-card"><h3>中老年陪伴守护</h3><p>已进入中老年服务页面</p><button class="btn" onclick="goPage('page-cycle')">返回</button></div></div>
+<div class="page" id="page-nav"><div class="service-card"><h3>智能无障碍导航</h3><p>已开启导航页面</p><button class="btn" onclick="goPage('page-service')">返回</button></div></div>
+<div class="page" id="page-sign"><div class="service-card"><h3>实时手语翻译</h3><p>已开启翻译页面</p><button class="btn" onclick="goPage('page-service')">返回</button></div></div>
+<div class="page" id="page-voice"><div class="service-card"><h3>语音播报助手</h3><p>已开启播报</p><button class="btn" onclick="goPage('page-service')">返回</button></div></div>
+<div class="page" id="page-stt"><div class="service-card"><h3>语音转文字</h3><p>已开启转换</p><button class="btn" onclick="goPage('page-service')">返回</button></div></div>
+<div class="page" id="page-zoom"><div class="service-card"><h3>屏幕放大镜</h3><p>已开启放大</p><button class="btn" onclick="goPage('page-service')">返回</button></div></div>
+
+</div>
+
+<!-- ====================== 底部导航 ====================== -->
+<div class="app-tab">
+    <div class="tab-item active" data-page="page-home"><span class="tab-icon">🏠</span><span>首页</span></div>
+    <div class="tab-item" data-page="page-service"><span class="tab-icon">📋</span><span>服务大厅</span></div>
+    <div class="tab-item" data-page="page-shop"><span class="tab-icon">🏪</span><span>无碍工坊</span></div>
+    <div class="tab-item" data-page="page-user"><span class="tab-icon">👤</span><span>个人中心</span></div>
+</div>
+
+<script>
+    const titleMap = {
+        'page-home': '有爱无碍，易生同行',
+        'page-cycle': '全周期个性化服务',
+        'page-service': '服务大厅',
+        'page-report': '一键反映',
+        'page-help': '一键求助',
+        'page-shop': '无碍工坊',
+        'page-crafts': '残障创作者作品',
+        'page-user': '个人中心',
+        'page-child':'儿童潜能启蒙',
+        'page-teen':'青少年技能培训',
+        'page-job':'成年就业帮扶',
+        'page-old':'中老年陪伴守护',
+        'page-nav':'智能无障碍导航',
+        'page-sign':'实时手语翻译',
+        'page-voice':'语音播报助手',
+        'page-stt':'语音转文字',
+        'page-zoom':'屏幕放大镜'
+    };
+    function goPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        const tab = document.querySelector(`[data-page="${pageId}"]`);
+        if(tab) tab.classList.add('active');
+        document.getElementById('header-title').innerText = titleMap[pageId] || '有爱无碍，易生同行';
+    }
+    document.querySelectorAll('.tab-item').forEach(tab => {
+        tab.addEventListener('click', () => goPage(tab.dataset.page));
+    });
+
+    // 语音播报新闻（视障友好）
+    function readNews() {
+        const texts = [
+            "全国助残日：推动无障碍环境建设，保障残障人士平等参与",
+            "残疾人就业促进新政发布：企业按比例安置，补贴全面升级",
+            "感动中国：残障青年自主创业，用双手创造精彩人生"
+        ];
+        const msg = new SpeechSynthesisUtterance(texts[0]);
+        window.speechSynthesis.speak(msg);
+        alert("已开启语音播报");
+    }
+</script>
+</body>
+</html>
